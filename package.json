@@ -1,0 +1,16 @@
+{
+  "name": "lambda-ssl-check",
+  "version": "1.0.0",
+  "description": "Lambda script for checking when SSL certs expire for a list of sites",
+  "main": "ssl-check-new.js",
+  "repository": "git@github.com:telusdigital/lambda-ssl-check.git",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ben Visser",
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "^3.0.5",
+    "slack-node": "^0.1.3"
+  }
+}

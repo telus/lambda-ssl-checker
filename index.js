@@ -1,42 +1,62 @@
+// https promise calls
 var https = require('https');
-var Slack = require('slack-node');
 var Promise = require("bluebird");
 
+// interact with s3
+var aws = require('aws-sdk');
+var s3 = new aws.S3({apiVersion: '2006-03-01'});
+
+// interact with slack
+var Slack = require('slack-node');
 var slack = new Slack();
 slack.setWebhook(process.env.SLACK_TOKEN);
-console.log('test');
 
 exports.handler = function(event, context) {
 
-  var results_array = [];
+  var bucket = event.Records[0].s3.bucket.name;
+  var key = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, " "));
 
-  for (link in event){
-    var promise = new Promise(function(resolve, reject) {
-      (function(url) {
-        https.request({host: url, port: 443, method: "GET"}, function(res) {
-          var cert = res.connection.getPeerCertificate().valid_to;
-          var cert_date = new Date(cert);
-          var date_now = new Date();
-          var days = days_between(cert_date, date_now);
-          var result = url + " will expire in " + days  + " days.\n";
-          resolve(result);
-        }).end();
-      })(event[link]);
-    });
-    results_array.push(promise);
-  }
+  console.log(key);
 
-  // TODO: add failure
-  Promise.all(results_array).then(function(results) {
-    slack.webhook({
-      channel: '#digital-ops',
-      username: 'SSL Watch',
-      text: results.join("")
-    }, function(err, response) {
-      if(response.statusCode == "200"){
-        context.succeed("done")
+  s3.getObject({Bucket: bucket, Key: key}, function(err, data) {
+    if (err) {
+      console.log("Error getting object " + key + " from bucket " + bucket +
+          ". Make sure they exist and your bucket is in the same region as this function.");
+      context.fail ("Error getting file: " + err)
+    } else {
+
+      var sites = JSON.parse(data.Body.toString());
+      var results_array = [];
+
+      for (link in sites){
+        var promise = new Promise(function(resolve, reject) {
+          (function(url) {
+            https.request({host: url, port: 443, method: "GET"}, function(res) {
+              var cert = res.connection.getPeerCertificate().valid_to;
+              var cert_date = new Date(cert);
+              var date_now = new Date();
+              var days = days_between(cert_date, date_now);
+              var result = url + " will expire in " + days  + " days.\n";
+              resolve(result);
+            }).end();
+          })(sites[link]);
+        });
+        results_array.push(promise);
       }
-    });
+
+      Promise.all(results_array).then(function(results) {
+        console.log(results);
+        slack.webhook({
+          channel: '#digital-ops',
+          username: 'SSL Watch',
+          text: results.join("")
+        }, function(err, response) {
+          if(response.statusCode == "200"){
+            context.succeed("done")
+          }
+        });
+      });
+    }
   });
 };
 

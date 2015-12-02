@@ -9,14 +9,12 @@ var s3 = new aws.S3({apiVersion: '2006-03-01'});
 // interact with slack
 var Slack = require('slack-node');
 var slack = new Slack();
-slack.setWebhook(process.env.SLACK_TOKEN);
+slack.setWebhook(process.env.SLACK_WEBHOOK_URL);
 
 exports.handler = function(event, context) {
 
-  var bucket = event.Records[0].s3.bucket.name;
-  var key = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, " "));
-
-  console.log(key);
+  var bucket = 'telusdigital-lambda';
+  var key = 'ssl-check/event.json';
 
   s3.getObject({Bucket: bucket, Key: key}, function(err, data) {
     if (err) {
@@ -45,12 +43,13 @@ exports.handler = function(event, context) {
       }
 
       Promise.all(results_array).then(function(results) {
-        console.log(results);
         slack.webhook({
           channel: '#' + process.env.SLACK_CHANNEL,
           username: 'SSL Watch',
-          text: results.join("")
+          text: results.join(""),
+
         }, function(err, response) {
+          if(err) console.log(err);
           if(response.statusCode == "200"){
             context.succeed("done")
           }

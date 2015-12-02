@@ -47,7 +47,7 @@ exports.handler = function(event, context) {
       Promise.all(results_array).then(function(results) {
         console.log(results);
         slack.webhook({
-          channel: '#digital-ops',
+          channel: '#' + process.env.SLACK_CHANNEL,
           username: 'SSL Watch',
           text: results.join("")
         }, function(err, response) {

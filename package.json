@@ -1,9 +1,9 @@
 {
-  "name": "lambda-ssl-check",
+  "name": "lambda-ssl-checker",
   "version": "1.0.0",
   "description": "Lambda script for checking when SSL certs expire for a list of sites",
-  "main": "ssl-check-new.js",
-  "repository": "git@github.com:telusdigital/lambda-ssl-check.git",
+  "main": "index.js",
+  "repository": "git@github.com:telusdigital/lambda-ssl-checker.git",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

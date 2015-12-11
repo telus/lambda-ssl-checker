@@ -61,8 +61,9 @@ You can then press the `test` button for your lambda function to test its functi
 
 In order to add new sites to scan, just upload an updated file list to s3.
 
-`aws s3 cp event.json s3://telusdigital-lambda/ssl-check/event.json`
-
+```
+aws s3 cp event.json s3://$your-bucket/event.json
+```
 
 ## Deploy Script
 

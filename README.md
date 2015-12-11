@@ -57,7 +57,14 @@ aws s3 cp event.json s3://$your-bucket/event.json
 
 You can then press the `test` button for your lambda function to test its functionality.
 
-## Deployment
+## Add New Sites
+
+In order to add new sites to scan, just upload an updated file list to s3.
+
+`aws s3 cp event.json s3://telusdigital-lambda/ssl-check/event.json`
+
+
+## Deploy Script
 
 For this script, I am using [node-lambda](https://github.com/motdotla/node-lambda) for deployment. It requires you to set a few ENV variables before getting started.
 

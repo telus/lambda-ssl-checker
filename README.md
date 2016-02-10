@@ -1,5 +1,7 @@
 # Lambda SSL Check
 
+[![Code Climate](https://codeclimate.com/github/telusdigital/lambda-ssl-checker/badges/gpa.svg)](https://codeclimate.com/github/telusdigital/lambda-ssl-checker)
+
 This is a simple lambda function that will check when SSL expires on a list of sites. It grabs a list of sites from an object in S3 and posts to a slack channel.
 
 ## Development
